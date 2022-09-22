@@ -22,15 +22,13 @@ Including another URLconf
 
 
 from django.contrib import admin
-from django.urls import path
-
-from pybo import views
+from django.urls import path, include
 
 
 urlpatterns = [
     # 뒤에 /(슬래시)를 붙여주면 브라우저 주소창에 http://localhost:8000/pybo 라고 입력해도 자동으로 http://localhost:8000/pybo/ 처럼 변환된다. 이렇게 되는 이유는 URL을 정규화하는 장고의 기능 때문
     # 특별한 경우가 아니라면 URL 매핑시 항상 끝에 슬래시를 붙여 준다.
     path('admin/', admin.site.urls),
-    # pybo/ URL이 요청되면 views.index를 호출하라는 코드 매핑
-    path('pybo/', views.index),
+    # pybo/ 로 시작하는 페이지를 요청하면 pybo/urls.py 파일의 매핑 정보를 읽어서 처리하도록 함
+    path('pybo/', include('pybo.urls')),
 ]
