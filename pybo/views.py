@@ -6,7 +6,7 @@
 # 즉, 사용자가 요청하는 값(request)을 받아 모델과 템플릿을 중개하는 역할을 한다.
 
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import Question
 
 # index 페이지 관련 함수
@@ -27,8 +27,10 @@ def index(request):
 # 매개변수 question_id에는 URL 매핑시 저장된 question_id가 전달
 def detail(request, question_id):
     # 전달받은 id와 관련된 (Question의) 질문 데이터 얻기
+    # pk : 모델의 기본키(Primary Key)  # 해당 모델의 pk는 id이다.
+    # get_object_or_404() : 존재하지 않는 데이터를 요청할 경우 404 페이지 출력
     # question : 질문 데이터
-    question = Question.objects.get(id=question_id)
+    question = get_object_or_404(Question, pk=question_id)
     # 질문 데이터를 딕셔너리로 저장
     context = {'question': question}
     # 관련 질문으로 얻은 question 데이터(context)를 템플릿 파일(pybo/question_detail.html)에 적용하여 HTML을 생성한 후 리턴
