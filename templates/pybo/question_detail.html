@@ -1,4 +1,6 @@
 <!-- 질문 상세 페이지 관련 템플릿 -->
+{% load static %}  {# 스태틱 파일 사용 #}
+<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">  {# 스태틱 디렉터리에 저장되어 있는 style.css 스태틱 파일 사용 #}
 <!-- 질문 -->
 {# question : render 함수로 전달받은 질문 데이터 #}
 <h1>{{ question.subject }}</h1>  {# 질문 제목 #}
