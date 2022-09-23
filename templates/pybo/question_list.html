@@ -1,0 +1,14 @@
+<!-- 질문 목록 관련 템플릿 -->
+{# question_list : render 함수로 전달받은 질문 목록 데이터 #}
+{% if question_list %}  {# question_list가 있다면 #}
+    <ul>
+    {% for question in question_list %}  {# question_list를 순회하며 순차적으로 하나씩 question에 대입 #}
+        {# 질문 id(question.id)를 받아와, 받아온 id와 관련된 질문 제목(question.subject)을 링크된 주소에 출력 #}
+        {# {{ question.id }} : for 문에 의해 대입된 question 객체의 id 번호 #}
+        {# {{ question.subject }} : for 문에 의해 대입된 question 객체의 제목 #}
+        <li><a href="/pybo/{{ question.id }}/">{{ question.subject }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>질문이 없습니다.</p>
+{% endif %}

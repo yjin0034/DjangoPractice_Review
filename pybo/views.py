@@ -6,12 +6,32 @@
 # 즉, 사용자가 요청하는 값(request)을 받아 모델과 템플릿을 중개하는 역할을 한다.
 
 
-from django.http import HttpResponse
-
+from django.shortcuts import render
+from .models import Question
 
 # index 페이지 관련 함수
-# index 함수의 매개변수 request는 HTTP 요청 객체
+# 매개변수 request는 HTTP 요청 객체
 def index(request):
-    # HttpResponse : 요청에 대한 응답을 할 때 사용
-    return HttpResponse("안녕하세요 pybo에 오신 것을 환영합니다.")
+    # Question의 질문 목록 데이터 얻기
+    # question_list : 질문 목록 데이터
+    # order_by : 조회 결과를 정렬하는 함수
+    # order_by('-create_date') : 작성 일시를 역순으로 정렬  # - : 역방향
+    question_list = Question.objects.order_by('-create_date')
+    # 질문 목록 데이터를 딕셔너리로 저장
+    context = {'question_list': question_list}
+    # 질문 목록으로 조회한 question_list 데이터(context)를 템플릿 파일(pybo/question_list.html)에 적용하여 HTML을 생성한 후 리턴
+    # render 함수 : 파이썬 데이터를 템플릿에 적용하여 HTML로 반환하는 함수
+    return render(request, 'pybo/question_list.html', context)
+
+# 질문 상세 페이지 관련 함수
+# 매개변수 question_id에는 URL 매핑시 저장된 question_id가 전달
+def detail(request, question_id):
+    # 전달받은 id와 관련된 (Question의) 질문 데이터 얻기
+    # question : 질문 데이터
+    question = Question.objects.get(id=question_id)
+    # 질문 데이터를 딕셔너리로 저장
+    context = {'question': question}
+    # 관련 질문으로 얻은 question 데이터(context)를 템플릿 파일(pybo/question_detail.html)에 적용하여 HTML을 생성한 후 리턴
+    return render(request, 'pybo/question_detail.html', context)
+
 
