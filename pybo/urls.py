@@ -21,7 +21,13 @@ urlpatterns = [
     # <int:question_id> : 정수형 숫자 매핑
     # 예를 들어, 만일 http://localhost:8000/pybo/2/ 페이지가 요청되면
     # 여기에 등록한 매핑 룰에 의해 http://localhost:8000/pybo/<int:question_id>/ 가 적용되어,
-    # question_id 에 2가 저장되고, views.detail 함수도 실행
+    # question_id 에 2가 저장되고, views.detail 함수도 실행.
     # name='detail' : 해당 URL에 대해 URL 별칭 설정
     path('<int:question_id>/', views.detail, name='detail'),
+    # 답변 등록 기능 URL 매핑
+    # 예를 들어, 만일 http://locahost:8000/pybo/answer/create/2/ 페이지가 요청되면
+    # 여기에 등록한 매핑 룰에 의해 http://localhost:8000/pybo/answer/create/<int:question_id>/ 가 적용되어,
+    # question_id 에 2가 저장되고, views.answer_create 함수도 실행.
+    # name='answer_create' : 해당 URL에 대해 URL 별칭 설정
+    path('answer/create/<int:question_id>/', views.answer_create, name='answer_create'),
 ]

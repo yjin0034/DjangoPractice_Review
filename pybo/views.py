@@ -6,8 +6,9 @@
 # 즉, 사용자가 요청하는 값(request)을 받아 모델과 템플릿을 중개하는 역할을 한다.
 
 
-from django.shortcuts import render, get_object_or_404
-from .models import Question
+from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
+from .models import Question, Answer
 
 # index 페이지 관련 함수
 # 매개변수 request는 HTTP 요청 객체
@@ -36,4 +37,17 @@ def detail(request, question_id):
     # 관련 질문으로 얻은 question 데이터(context)를 템플릿 파일(pybo/question_detail.html)에 적용하여 HTML을 생성한 후 리턴
     return render(request, 'pybo/question_detail.html', context)
 
-
+# 답변 등록 관련 함수
+def answer_create(request, question_id):
+    # 전달받은 id와 관련된 (Question의) 질문 데이터 얻기
+    question = get_object_or_404(Question, pk=question_id)
+    # 답변 등록 시 텍스트창에 입력한 내용은 answer_create 함수의 첫번째 매개변수인 request 객체를 통해 읽을 수 있다.
+    # 즉, request.POST.get('content')로 텍스트창에 입력한 내용을 읽을 수 있다.
+    # request.POST.get('content') : POST로 전송된 폼(form) 데이터 항목 중 content 값을 의미
+    # 답변을 생성하기 위해 Answer 모델에 답변과 관련된 질문(question=question), (텍스트창에 입력된) 답변 내용(content=request.POST.get('content')), 작성 일시(create_date=timezone.now()) 속성을 넣어 저장함
+    answer = Answer(question=question, content=request.POST.get('content'), create_date=timezone.now())
+    answer.save()
+    # redirect 함수 : 페이지 이동을 위한 함수
+    # 답변을 생성한 후 질문 상세 화면을 다시 보여주기 위해 redirect 함수를 사용  # pybo:detail 별칭에 해당하는 페이지로 이동
+    # pybo:detail 별칭에 해당하는 URL은 question_id가 필요하므로 question.id를 인수로 전달
+    return redirect('pybo:detail', question_id=question.id)
