@@ -6,7 +6,9 @@
         {# 질문 id(question.id)를 받아와, 받아온 id와 관련된 질문 제목(question.subject)을 링크된 주소에 출력 #}
         {# {{ question.id }} : for 문에 의해 대입된 question 객체의 id 번호 #}
         {# {{ question.subject }} : for 문에 의해 대입된 question 객체의 제목 #}
-        <li><a href="/pybo/{{ question.id }}/">{{ question.subject }}</a></li>
+        {# 하드코딩 되어 있던 /pybo/{{ question.id }} 링크를 URL 네임스페이스와 URL 별칭을 활용한 {% url 'pybo:detail' question.id %}로 변경 #}
+        {# question.id는 pybo/urls.py URL 매핑에 정의된 <int:question_id>에 전달해야 하는 값 #}
+        <li><a href="{% url 'pybo:detail' question.id %}">{{ question.subject }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
