@@ -1,16 +1,37 @@
 <!-- 질문 목록 관련 템플릿 -->
-{# question_list : render 함수로 전달받은 질문 목록 데이터 #}
-{% if question_list %}  {# question_list가 있다면 #}
-    <ul>
-    {% for question in question_list %}  {# question_list를 순회하며 순차적으로 하나씩 question에 대입 #}
-        {# 질문 id(question.id)를 받아와, 받아온 id와 관련된 질문 제목(question.subject)을 링크된 주소에 출력 #}
-        {# {{ question.id }} : for 문에 의해 대입된 question 객체의 id 번호 #}
-        {# {{ question.subject }} : for 문에 의해 대입된 question 객체의 제목 #}
-        {# 하드코딩 되어 있던 /pybo/{{ question.id }} 링크를 URL 네임스페이스와 URL 별칭을 활용한 {% url 'pybo:detail' question.id %}로 변경 #}
-        {# question.id는 pybo/urls.py URL 매핑에 정의된 <int:question_id>에 전달해야 하는 값 #}
-        <li><a href="{% url 'pybo:detail' question.id %}">{{ question.subject }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>질문이 없습니다.</p>
-{% endif %}
+{% load static %}  {# 스태틱 파일 사용 #}
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">  {# 스태틱 디렉터리에 저장되어 있는 bootstrap.min.css 스태틱 파일 사용 #}
+<div class="container my-3">  {# 부트스트랩 컨테이너 #}
+    <table class="table">  {# 부트스트랩 테이블 태그 #}
+        <thead>
+        <tr class="table-dark">
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성일시</th>
+        </tr>
+        </thead>
+        <tbody>
+        {# question_list : render 함수로 전달받은 질문 목록 데이터 #}
+        {% if question_list %}  {# question_list가 있다면, #}
+        {% for question in question_list %}  {# question_list를 순회하며 순차적으로 하나씩 question에 대입 #}
+        <tr>
+            <td>{{ forloop.counter }}</td>  {# 질문 게시글 번호 #}  {# forloop.counter : 루프 내의 순서로, 1부터 표시 #}
+            <td>
+                {# 질문 id(question.id)를 받아와, 받아온 id와 관련된 질문 제목(question.subject)을 링크된 주소에 출력 #}
+                {# {{ question.id }} : for 문에 의해 대입된 question 객체의 id 번호 #}
+                {# {{ question.subject }} : for 문에 의해 대입된 question 객체의 제목 #}
+                {# 하드코딩 되어 있던 /pybo/{{ question.id }} 링크를 URL 네임스페이스와 URL 별칭을 활용한 {% url 'pybo:detail' question.id %}로 변경 #}
+                {# question.id는 pybo/urls.py URL 매핑에 정의된 <int:question_id>에 전달해야 하는 값 #}
+                <a href="{% url 'pybo:detail' question.id %}">{{ question.subject }}</a>
+            </td>
+            <td>{{ question.create_date }}</td>
+        </tr>
+        {% endfor %}
+        {% else %}  {# question_list가 없다면, #}
+        <tr>
+            <td colspan="3">질문이 없습니다.</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>

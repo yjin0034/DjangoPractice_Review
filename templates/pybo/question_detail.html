@@ -1,24 +1,43 @@
 <!-- 질문 상세 페이지 관련 템플릿 -->
 {% load static %}  {# 스태틱 파일 사용 #}
-<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">  {# 스태틱 디렉터리에 저장되어 있는 style.css 스태틱 파일 사용 #}
-<!-- 질문 -->
-{# question : render 함수로 전달받은 질문 데이터 #}
-<h1>{{ question.subject }}</h1>  {# 질문 제목 #}
-<div>
-    {{ question.content }}  {# 질문 내용 #}
-</div>
-<!-- 답변 -->
-<h5>{{ question.answer_set.count }}개의 답변이 있습니다.</h5>  {# question.answer_set.count : 답변의 총 갯수 #}
-<div>
-    <ul>
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">  {# 스태틱 디렉터리에 저장되어 있는 bootstrap.min.css 스태틱 파일 사용 #}
+<div class="container my-3">  {# 부트스트랩 컨테이너 #}
+    <!-- 질문 -->
+    {# question : render 함수로 전달받은 질문 데이터 #}
+    <h2 class="border-bottom py-2">{{ question.subject }}</h2>  {# 질문 제목 #}  {# border-bottom : 아래방향 테두리 선 #} {# py-2 : 상하 패딩값 2 #}
+    <div class="card my-3">  {# 부트스트랩 Card 컴포넌트 #}  {# my-3 : 상하 마진값 3 #}
+        <div class="card-body">
+            {# CSS white-space 속성 : 요소의 공백을 어떻게 처리할지 정의하는 속성 #}
+            {# white-space의 pre-line 속성 값 : 여러 개의 공백은 메꾸어져 하나의 공백이 됨. 박스의 영역이 넘어가는 내용은 줄 바꿔 표시 #}
+            <div class="card-text" style="white-space: pre-line;">{{ question.content }}</div>  {# 질문 내용 #}
+            <div class="d-flex justify-content-end">  {# d-flex justify-content-end : 컴포넌트의 우측 정렬 #}
+                <div class="badge bg-light text-dark p-2">  {# 부트스트랩 Badge 컴포넌트 #}  {# bg-light : 연회색 배경 #}  {# text-dark : 검은색 글씨 #}  {# p-2 : 상하좌우 패딩값 2 #}
+                    {{ question.create_date }}  {# 질문 작성일시 #}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 답변 -->
+    <h5 class="border-bottom my-3 py-2">{{ question.answer_set.count }}개의 답변이 있습니다.</h5>  {# question.answer_set.count : 답변의 총 개수 #}
     {% for answer in question.answer_set.all %}  {# question.answer_set.all을 순회하며 순차적으로 하나씩 answer에 대입 #}
-        <li>{{ answer.content }}</li>  {# 답변 내용 #}
+    <div class="card my-3">
+        <div class="card-body">
+            <div class="card-text" style="white-space: pre-line;">{{ answer.content }}</div>  {# 답변 내용 #}
+            <div class="d-flex justify-content-end">
+                <div class="badge bg-light text-dark p-2">
+                    {{ answer.create_date }}  {# 답변 작성일시 #}
+                </div>
+            </div>
+        </div>
+    </div>
     {% endfor %}
-    </ul>
+    <!-- 답변 등록 -->
+    <form action="{% url 'pybo:answer_create' question.id %}" method="post" class="my-3">  {# 링크된 해당 URL로, 작성된 form 데이터를 POST 방식으로 전달 #}
+        {% csrf_token %}  {# csrf 공격 방지 코드. form으로 전송한 데이터가 실제 웹 페이지에서 작성한 데이터인지 판단하는 가늠자 역할 #}
+        <div class="mb-3">  {# mb-3 : 하(bottom) 마진값 3 #}
+            <label for="content" class="form-label">답변내용</label>  {# form-control, form-label : 부트스트랩 Form 컴포넌트 #}
+            <textarea name="content" id="content" class="form-control" rows="10"></textarea>  {# <textarea></textarea> : 답변의 내용을 입력할 수 있는 텍스트창 #}
+        </div>
+        <input type="submit" value="답변등록" class="btn btn-primary">  {# 답변등록 버튼. 해당 버튼을 클릭하면 작성한 form 데이터를 전달 #} {# btn btn-primary : 부트스트랩 버튼 컴포넌트 #}
+    </form>
 </div>
-<!-- 답변 등록 -->
-<form action="{% url 'pybo:answer_create' question.id %}" method="post">  {# 링크된 해당 URL로, 작성된 form 데이터를 POST 방식으로 전달 #}
-{% csrf_token %}  {# csrf 공격 방지 코드. form으로 전송한 데이터가 실제 웹 페이지에서 작성한 데이터인지 판단하는 가늠자 역할 #}
-<textarea name="content" id="content" rows="15"></textarea>  {# <textarea></textarea> : 답변의 내용을 입력할 수 있는 텍스트창 #}
-<input type="submit" value="답변등록">  {# 답변등록 버튼. 해당 버튼을 클릭하면 작성한 form 데이터를 전달 #} {# btn btn-primary : 부트스트랩 버튼 컴포넌트 #}
-</form>
