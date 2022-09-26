@@ -1,6 +1,6 @@
 <!-- 질문 목록 관련 템플릿 -->
-{% load static %}  {# 스태틱 파일 사용 #}
-<link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">  {# 스태틱 디렉터리에 저장되어 있는 bootstrap.min.css 스태틱 파일 사용 #}
+{% extends 'base.html' %}  {# base.html 템플릿 상속 #}
+{% block content %}
 <div class="container my-3">  {# 부트스트랩 컨테이너 #}
     <table class="table">  {# 부트스트랩 테이블 태그 #}
         <thead>
@@ -35,3 +35,4 @@
         </tbody>
     </table>
 </div>
+{% endblock %}

@@ -10,6 +10,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import Question, Answer
 
+
 # index 페이지 관련 함수
 # 매개변수 request는 HTTP 요청 객체
 def index(request):
