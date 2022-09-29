@@ -14,9 +14,15 @@
     <title>Hello, pybo!</title>
 </head>
 <body>
+<!-- 네비게이션바 -->
+{# navbar.html 템플릿 상속 #}
+{# navbar.html 파일은 다른 템플릿들에서 중복되어 사용되지는 않지만 독립된 하나의 템플릿으로 관리하는 것이 유지 보수에 유리하므로 분리함 #}
+{% include "navbar.html" %}  {# include 태그 : 템플릿의 특정 위치에 다른 템플릿을 삽입할 수 있는 기능. 보통 템플릿에서 특정 영역이 반복적으로 사용될 경우 중복을 없애기 위해 사용 #}
 <!-- 기본 템플릿 안에 삽입될 내용 Start -->
 {% block content %}
 {% endblock %}
 <!-- 기본 템플릿 안에 삽입될 내용 End -->
+<!-- Bootstrap JS 추가 -->
+<script src="{% static 'bootstrap.min.js' %}"></script>
 </body>
 </html>
