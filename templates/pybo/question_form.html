@@ -1,0 +1,16 @@
+<!-- 질문 등록 관련 템플릿 -->
+{% extends 'base.html' %}
+{% block content %}  {# base.html 템플릿 상속 #}
+<div class="container">
+    <h5 class="my-3 border-bottom pb-2">질문등록</h5>
+    {# form 태그에 action 속성을 지정하지 않으면, 현재 페이지의 URL이 디폴트 action으로 설정됨 #}
+    {# 동일한 템플릿을 여러 기능에서 함께 사용할 경우에는, 이처럼 form의 action 속성을 비워두는 트릭을 종종 사용 #}
+    <form method="post">
+        {% csrf_token %}
+        {# {{ form.as_p }}는 폼에 정의한 subject, content 속성에 해당하는 HTML 코드를 자동으로 생성한다. #}
+        {# {{ form.as_p }}의 form은 (pybo/views의) question_create 함수에서 전달한 QuestionForm의 객체 #}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">저장하기</button>
+    </form>
+</div>
+{% endblock %}

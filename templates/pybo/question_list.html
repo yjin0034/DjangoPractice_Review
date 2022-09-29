@@ -34,5 +34,7 @@
         {% endif %}
         </tbody>
     </table>
+    {# 질문 등록하기 버튼 생성 #}
+    <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">질문 등록하기</a>  {# 버튼을 클릭하면, pybo:question_create 별칭에 해당되는 URL이 호출 #}
 </div>
 {% endblock %}
