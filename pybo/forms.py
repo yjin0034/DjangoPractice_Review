@@ -5,7 +5,7 @@
 
 
 from django import forms
-from pybo.models import Question
+from pybo.models import Question, Answer
 
 
 # Question 모델과 연결된 폼
@@ -15,17 +15,18 @@ class QuestionForm(forms.ModelForm):
     class Meta:  # 모델 폼은 이너 클래스인 Meta 클래스가 반드시 필요  # Meta 클래스에는 사용할 모델과 모델의 속성을 적어야 한다.
         model = Question  # 사용할 모델
         fields = ['subject', 'content']  # QuestionForm에서 사용할 Question 모델의 속성
-        # 위젯 속성
-        # widgets 속성을 지정하면 subject, content 입력 필드에 form-control과 같은 부트스트랩 클래스를 추가해 (질문 등록 페이지에) 디자인을 적용할 수 있다.
-        # question_form.html의 {{ form.as_p }} 태그로 인해, 부트스트랩을 적용할 수가 없어서 위와 같이 위젯 속성을 활용
-        # {{ form.as_p }} 태그는 HTML 코드를 자동으로 생성하기 때문에.
-        widgets = {
-            'subject': forms.TextInput(attrs={'class': 'form-control'}),
-            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
-        }
         # labels 속성
         # 질문 등록 페이지에 표시되는 'Subject', 'Content'를 한글로 표시하기
         labels = {
             'subject': '제목',
             'content': '내용',
+        }
+
+# Answer 모델과 연결된 폼
+class AnswerForm(forms.ModelForm):
+    class Meta:
+        model = Answer  # 사용할 모델
+        fields = ['content']  # AnswerForm에서 사용할 Answer 모델의 속성
+        labels = {
+            'content': '답변내용'
         }

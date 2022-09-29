@@ -7,9 +7,35 @@
     {# 동일한 템플릿을 여러 기능에서 함께 사용할 경우에는, 이처럼 form의 action 속성을 비워두는 트릭을 종종 사용 #}
     <form method="post">
         {% csrf_token %}
-        {# {{ form.as_p }}는 폼에 정의한 subject, content 속성에 해당하는 HTML 코드를 자동으로 생성한다. #}
-        {# {{ form.as_p }}의 form은 (pybo/views의) question_create 함수에서 전달한 QuestionForm의 객체 #}
-        {{ form.as_p }}
+        {# (pybo/views의) question_create 함수에서 form.is_valid() 가 실패할 경우 발생하는 오류의 내용을 표시하기 위해 오류를 표시하는 영역 #}
+        <!-- 오류표시 Start -->
+        {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for field in form %}
+            {% if field.errors %}
+            <div>
+                <strong>{{ field.label }}</strong>
+                {{ field.errors }}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        <!-- 오류표시 End -->
+        {# ({{ form.as_p }}로 자동으로 생성되는 HTML 대신,) 제목과 내용에 해당되는 HTML코드를 직접 작성하기 #}
+        <div class="mb-3">
+            <label for="subject" class="form-label">제목</label>
+            {# value="{{ form.subject.value }}" : 오류가 발생했을 경우 기존에 입력했던 값을 유지하기 위한 코드 #}
+            {# |default_if_none:'' :  폼 데이터(form.subject.value)에 값이 없을 경우 None 이라는 문자열이 표시되는데, None 대신 공백으로 표시하라는 의미의 템플릿 필터 #}
+            {# 장고의 템플릿 필터는 |default_if_none:'' 처럼, | 기호와 함께 사용 #}
+            <input type="text" class="form-control" name="subject" id="subject"
+                   value="{{ form.subject.value|default_if_none:'' }}">
+        </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">내용</label>
+            <textarea class="form-control" name="content" id="content"
+                      rows="10">{{ form.content.value|default_if_none:'' }}</textarea>
+        </div>
         <button type="submit" class="btn btn-primary">저장하기</button>
     </form>
 </div>

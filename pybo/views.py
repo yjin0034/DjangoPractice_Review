@@ -9,7 +9,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import Question, Answer
-from .forms import QuestionForm
+from django.http import HttpResponseNotAllowed
+from .forms import QuestionForm, AnswerForm
 
 
 # index 페이지 관련 함수
@@ -43,16 +44,27 @@ def detail(request, question_id):
 def answer_create(request, question_id):
     # 전달받은 id와 관련된 (Question의) 질문 데이터 얻기
     question = get_object_or_404(Question, pk=question_id)
-    # 답변 등록 시 텍스트창에 입력한 내용은 answer_create 함수의 첫번째 매개변수인 request 객체를 통해 읽을 수 있다.
-    # 즉, request.POST.get('content')로 텍스트창에 입력한 내용을 읽을 수 있다.
-    # request.POST.get('content') : POST로 전송된 폼(form) 데이터 항목 중 content 값을 의미
-    # 답변을 생성하기 위해 Answer 모델에 답변과 관련된 질문(question=question), (텍스트창에 입력된) 답변 내용(content=request.POST.get('content')), 작성 일시(create_date=timezone.now()) 속성을 넣어 저장함
-    answer = Answer(question=question, content=request.POST.get('content'), create_date=timezone.now())
-    answer.save()
-    # redirect 함수 : 페이지 이동을 위한 함수
-    # 답변을 생성한 후 질문 상세 화면을 다시 보여주기 위해 redirect 함수를 사용  # pybo:detail 별칭에 해당하는 페이지로 이동
-    # pybo:detail 별칭에 해당하는 URL은 question_id가 필요하므로 question.id를 인수로 전달
-    return redirect('pybo:detail', question_id=question.id)
+    # POST 요청 방식
+    if request.method == "POST":
+        # answer_create 함수는 (pybo/form의) AnswerForm()을 사용하겠다
+        # request.POST에는 화면에서 사용자가 입력한 내용들이 담겨있다.
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.create_date = timezone.now()
+            answer.question = question
+            answer.save()
+            # redirect 함수 : 페이지 이동을 위한 함수
+            # 답변을 생성한 후 질문 상세 화면을 다시 보여주기 위해 redirect 함수를 사용  # pybo:detail 별칭에 해당하는 페이지로 이동
+            # pybo:detail 별칭에 해당하는 URL은 question_id가 필요하므로 question.id를 인수로 전달
+            return redirect('pybo:detail', question_id=question.id)
+    # GET 요청 방식
+    # 답변 등록은 POST 방식만 사용되기 때문에 GET 방식으로 요청할 경우에는 HttpResponseNotAllowed 오류가 발생하도록 함
+    else:
+        return HttpResponseNotAllowed('Only POST is possible')
+    context = {'question': question, 'form': form}
+    # 답변과 관련된 질문('question':question)과 폼 데이터({'form': form})를 템플릿 파일(pybo/question_detail.html)에 적용하여 HTML을 생성한 후 리턴
+    return render(request, 'pybo/question_detail.html', context)
 
 # 질문 등록 관련 함수
 def question_create(request):
@@ -60,7 +72,7 @@ def question_create(request):
     # 질문 등록 페이지에서 subject, content 항목에 값을 기입하고 '저장하기' 버튼을 누르면 /pybo/question/create/ 페이지를 POST 방식으로 요청한다.
     # (question_form.html의) form 태그에 action 속성을 지정하지 않아 현재 페이지가 디폴트 action으로 설정되기 때문
     if request.method == 'POST':
-        # question_create 함수는 QuestionForm()을 사용하겠다
+        # question_create 함수는 (pybo/form의) QuestionForm()을 사용하겠다
         # request.POST에는 화면에서 사용자가 입력한 내용들이 담겨있다.
         form = QuestionForm(request.POST)  # request.POST를 인수로 QuestionForm을 생성할 경우, request.POST에 담긴 subject, content 값이 QuestionForm의 subject, content 속성에 자동으로 저장되어 객체가 생성
         # form.is_valid() : form이 유효한지를 검사  # 만약 form에 저장된 subject, content의 값이 올바르지 않다면 form에는 오류 메시지가 저장
