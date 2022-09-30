@@ -11,19 +11,28 @@ from django.utils import timezone
 from .models import Question, Answer
 from django.http import HttpResponseNotAllowed
 from .forms import QuestionForm, AnswerForm
+from django.core.paginator import Paginator
 
 
 # index 페이지 관련 함수
 # 매개변수 request는 HTTP 요청 객체
 def index(request):
+    # 페이지
+    # GET 방식으로 호출된 URL에서 page 값을 가져올 때 사용 (ex. http://localhost:8000/pybo/?page=1)
+    # page 값 없이 호출된 경우에는 디폴트로 1이라는 값이 설정되게 함 (ex. http://localhost:8000/pybo/)
+    page = request.GET.get('page', '1')
     # Question의 질문 목록 데이터 얻기
     # question_list : 질문 목록 데이터
     # order_by : 조회 결과를 정렬하는 함수
     # order_by('-create_date') : 작성 일시를 역순으로 정렬  # - : 역방향
     question_list = Question.objects.order_by('-create_date')
+    paginator = Paginator(question_list, 10)  # (질문 목록 데이터를) 페이지당 10개씩 보여주기
+    # paginator를 이용하여 요청된 페이지(page)에 해당되는, 페이징 객체(page_obj)를 생성
+    # 이렇게 하면 장고 내부적으로는 데이터 전체를 조회하지 않고, 해당 페이지의 데이터만 조회하도록 쿼리가 변경됨
+    page_obj = paginator.get_page(page)
     # 질문 목록 데이터를 딕셔너리로 저장
-    context = {'question_list': question_list}
-    # 질문 목록으로 조회한 question_list 데이터(context)를 템플릿 파일(pybo/question_list.html)에 적용하여 HTML을 생성한 후 리턴
+    context = {'question_list': page_obj}  # question_list는 페이징 객체(page_obj)
+    # 데이터(context)를 템플릿 파일(pybo/question_list.html)에 적용하여 HTML을 생성한 후 리턴
     # render 함수 : 파이썬 데이터를 템플릿에 적용하여 HTML로 반환하는 함수
     return render(request, 'pybo/question_list.html', context)
 

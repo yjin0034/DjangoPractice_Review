@@ -34,6 +34,51 @@
         {% endif %}
         </tbody>
     </table>
+    <!-- 페이징 처리 시작 -->
+    <ul class="pagination justify-content-center">
+        <!-- 이전 페이지 -->
+        {% if question_list.has_previous %}  {# 이전 페이지가 있는지 체크 #}
+        <li class="page-item">
+            {# 이전 페이지가 존재한다면, 이전 페이지 번호로 이동 #}
+            {# {{ question_list.previous_page_number }} : 이전 페이지 번호 #}
+            <a class="page-link" href="?page={{ question_list.previous_page_number }}">이전</a>
+        </li>
+        {% else %}  {# 이전 페이지가 없는 경우에는, "이전" 링크가 비활성화되도록 함 #}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
+        </li>
+        {% endif %}
+        <!-- 페이지 리스트 -->
+        {% for page_number in question_list.paginator.page_range %}  {# 페이지 리스트 루프 #}
+        {# 페이지 리스트의 페이지 번호가 현재 페이지(question_list.number)를 기준으로 좌우 5개씩 보이도록 설정 #}
+        {# |add:-5는 5만큼 빼라는 의미이고, |add:5는 5만큼 더하라는 의미 #}
+        {% if page_number >= question_list.number|add:-5 and page_number <= question_list.number|add:5 %}
+        {% if page_number == question_list.number %}  {# 해당 페이지 번호가 현재 페이지 번호와 같은지 체크 #}
+        {# 현재 페이지 번호라면, 해당 번호에 활성화(active)되어 표시됨. 파란색으로 색칠됨. #}  {# 즉, 현재 페이지 번호인 해당 번호는 색칠해 티나게 표시하겠다는 말. #}
+        <li class="page-item active" aria-current="page">
+            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% else %}  {# 그렇지 않다면, 그냥 번호만 표시됨. 현재 페이지 번호 외의 번호들 #}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+        <!-- 다음 페이지 -->
+        {% if question_list.has_next %}  {# 다음 페이지가 있는지 체크 #}
+        <li class="page-item">
+            {# 다음 페이지가 존재한다면, 다음 페이지 번호로 이동 #}
+            {# {{ question_list.next_page_number }} : 다음 페이지 번호 #}
+            <a class="page-link" href="?page={{ question_list.next_page_number }}">다음</a>
+        </li>
+        {% else %}  {# 다음 페이지가 없는 경우에는, "다음" 링크가 비활성화되도록 함 #}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
+        </li>
+        {% endif %}
+    </ul>
+    <!-- 페이징 처리 끝 -->
     {# 질문 등록하기 버튼 생성 #}
     <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">질문 등록하기</a>  {# 버튼을 클릭하면, pybo:question_create 별칭에 해당되는 URL이 호출 #}
 </div>

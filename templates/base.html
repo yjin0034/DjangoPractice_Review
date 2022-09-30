@@ -1,5 +1,6 @@
 <!-- 모든 템플릿들의 기본 틀이 되는 base.html 템플릿. 표준 HTML 구조로 작성 -->
-{% load static %}
+{# 해당 템플릿에서 스태틱 파일을 사용하기 위해 {% load static %} 태그 삽입 #}
+{% load static %}  {# 템플릿에 스타일시트와 같은 스태틱 파일을 사용하기 위해서는 템플릿 최상단에 {% load static %} 태그를 먼저 삽입해야 한다. 그래야만 {% static ... %}와 같은 템플릿 태그를 사용할 수 있다. #}
 <!doctype html>
 <html lang="ko">
 <head>

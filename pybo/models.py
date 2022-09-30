@@ -18,8 +18,10 @@ class Question(models.Model):
     # 작성 일시
     create_date = models.DateTimeField()
 
-    # 모델 데이터 조회 시, Question 모델에 저장된 값들의 제목이 표시되도록 하는 메서드
+    # __str__ 메서드
+    # 장고 모델에서 클래스의 오브젝트를 출력할 때 나타날 내용들을 결정하는 메서드
     def __str__(self):
+        # 모델 데이터 조회 시, Question 모델에 저장된 값들의 제목이 표시되도록 설정함
         return self.subject  # 제목 표시
 
 # 답변 모델
