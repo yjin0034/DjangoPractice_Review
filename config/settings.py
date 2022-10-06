@@ -142,3 +142,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # 다만, /accounts/profile/ URL은 현재 우리가 파이보 앱에 구성한 URL 구조와 맞지 않으므로,
 # 우리는 로그인 성공 시 / 페이지로 이동할 수 있도록 아래와 같이 설정함.
 LOGIN_REDIRECT_URL = '/'
+
+# 로그아웃 시 이동할 URL 설정
+LOGOUT_REDIRECT_URL = '/'
