@@ -39,7 +39,9 @@
         {% include "form_errors.html" %}
         <div class="mb-3">  {# mb-3 : 하(bottom) 마진값 3 #}
             <label for="content" class="form-label">답변내용</label>  {# form-control, form-label : 부트스트랩 Form 컴포넌트 #}
-            <textarea name="content" id="content" class="form-control" rows="10"></textarea>  {# <textarea></textarea> : 답변의 내용을 입력할 수 있는 텍스트창 #}
+            {# {% if not user.is_authenticated %}disabled{% endif %} : 로그인 상태가 아닌 경우 textarea 태그에 disabled 속성을 적용하여 입력을 못하게 만듦 #}
+            <textarea {% if not user.is_authenticated %}disabled{% endif %}  {# <textarea></textarea> : 답변의 내용을 입력할 수 있는 텍스트창 #}
+                    name="content" id="content" class="form-control" rows="10"></textarea>
         </div>
         <input type="submit" value="답변등록" class="btn btn-primary">  {# 답변등록 버튼. 해당 버튼을 클릭하면 작성한 form 데이터를 전달 #} {# btn btn-primary : 부트스트랩 버튼 컴포넌트 #}
     </form>

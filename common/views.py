@@ -7,9 +7,9 @@ from common.forms import UserForm
 def signup(request):
     # POST 요청 방식
     if request.method == "POST":
-        # POST 요청인 경우에는, 화면에서 입력한 데이터로 사용자를 생성
-        # (common/forms.py의) UserForm으로부터 폼 데이터 전달받음
+        # (common/forms.py의) UserForm으로부터 폼 데이터를 전달받음
         form = UserForm(request.POST)
+        # POST 요청인 경우에는, 화면에서 입력한 데이터로 사용자를 생성
         if form.is_valid():
             form.save()
             # form.cleaned_data.get 함수 : 폼의 입력값을 개별적으로 얻고 싶은 경우에 사용하는 함수로, 여기서는 인증 시 사용할 사용자명과 비밀번호를 얻기 위해 사용
@@ -25,7 +25,7 @@ def signup(request):
 
     # GET 요청 방식
     else:
-        # GET 요청인 경우에는, 회원가입 화면을 보여준다.
-        # (common/forms.py의) UserForm으로부터 폼 데이터 전달받음
+        # (common/forms.py의) UserForm으로부터 폼 데이터를 전달받음
         form = UserForm()
+    # GET 요청인 경우에는, 회원가입 화면을 보여준다.
     return render(request, 'common/signup.html', {'form': form})

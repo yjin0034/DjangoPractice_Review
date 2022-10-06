@@ -3,10 +3,18 @@
 {% block content %}
 <div class="container my-3">
     <form method="post" action="{% url 'common:login' %}">  {# 링크된 해당 URL로, 작성된 form 데이터를 POST 방식으로 전달 #}
-    {% csrf_token %}
-    {# 로그인 실패 시, 발생하는 오류의 내용 출력과 관련된 코드가 작성된 템플릿 파일 #}
-    {% include "form_errors.html" %}
-    {# 아이디 #}
+        {% csrf_token %}
+        <!-- 로그인 성공 후 이동되는 URL -->
+        <!-- 로그인 성공 후 next 파라미터에 있는 URL로 페이지를 이동하겠다는 의미.
+        로그인 후 next 파라미터에 있는 URL로 페이지를 이동하려면 로그인 템플릿에 다음과 같이 hidden 타입의 next 항목을 추가해야 한다. -->
+        <!-- 만일 아래와 같은 코드를 작성하지 않으면, 로그인하지 않은 상태에서 질문 등록하기 또는 답변 등록하기 버튼을 클릭하고 이 때 나타나는
+         로그인 화면에서 아이디, 비번을 입력하여 로그인에 성공하였을 때, 그냥 다시 index 페이지(메인 페이지)로 이동되게 된다.
+         그렇지만, 만일 아래 코드를 작성한다면, 이를 방지하고 다시 해당 질문 또는 답변 등록하기 버튼을 클릭한 응답대로 질문 또는 답변 등록하기
+         화면으로 이동하게 만들 수 있다. -->
+        <input type="hidden" name="next" value="{{ next }}">
+        {# 로그인 실패 시, 발생하는 오류의 내용 출력과 관련된 코드가 작성된 템플릿 파일 #}
+        {% include "form_errors.html" %}
+        {# 아이디 #}
         <div class="mb-3">
             <label for="username">사용자 ID</label>
             {# {{ form.subject.value|default_if_none:'' }} : 오류가 발생했을 경우 기존에 입력했던 값을 유지하기 위함 #}

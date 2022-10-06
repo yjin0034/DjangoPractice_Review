@@ -4,10 +4,16 @@
 
 
 from django.db import models
+from django.contrib.auth.models import User
 
 
 # 질문 모델
 class Question(models.Model):
+    # 작성자 컬럼
+    # User 모델 : django.contrib.auth 앱이 제공하는 사용자 모델. 우리는 회원 가입 시 데이터 저장에 사용했던 모델이다.
+    # models.ForeignKey : 타 모델(User)을 속성으로 연결
+    # on_delete=models.CASCADE : 계정(User)이 삭제되면 이 계정이 작성한 질문을 모두 삭제
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     # 제목
     # 최대 200자
     # CharField : 글자수의 길이가 제한된 텍스트에 사용
@@ -26,6 +32,8 @@ class Question(models.Model):
 
 # 답변 모델
 class Answer(models.Model):
+    # 작성자 컬럼
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     # 질문 모델을 속성으로 연결. (해당 답변과 관련된) 질문
     # models.ForeignKey : 타 모델(Question)을 외래키로 연결
     # on_delete=models.CASCADE : 해당 답변과 연결된 질문이 삭제될 경우 답변도 함께 삭제됨

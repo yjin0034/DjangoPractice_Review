@@ -4,8 +4,7 @@
 # 사용자가 입력한 URL에 따라, 모델(Model)에서 필요한 데이터를 가져와 뷰에서 가공해 보여주며, 템플릿(Template)에 전달하는 역할을 한다.
 # 장고의 뷰 파일(views.py)은 요청에 따른 처리 논리를 정의한다.
 # 즉, 사용자가 요청하는 값(request)을 받아 모델과 템플릿을 중개하는 역할을 한다.
-
-
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import Question, Answer
@@ -50,16 +49,24 @@ def detail(request, question_id):
     return render(request, 'pybo/question_detail.html', context)
 
 # 답변 등록 관련 함수 뷰
+# answer_create 뷰는 함수 내에서 request.user를 사용하므로 로그인이 필요한 함수이다. 따라서, 아래와 같이 @login_requred 어노테이션을 사용해야 한다.
+# @login_required 어노테이션이 붙은 함수 : 로그인이 필요한 함수를 의미
+# @login_required 어노테이션은 login_url='common:login' 처럼 이동할 로그인 화면 URL을 지정할 수 있다.
+# 로그아웃 상태에서 @login_required 어노테이션이 적용된 함수가 호출되면 자동으로 로그인 화면(login_url='common:login')으로 이동하게 됨
+@login_required(login_url='common:login')
 def answer_create(request, question_id):
     # 전달받은 id와 관련된 (Question의) 질문 데이터 얻기
     question = get_object_or_404(Question, pk=question_id)
     # POST 요청 방식
     if request.method == "POST":
-        # answer_create 함수는 (pybo/form의) AnswerForm()을 사용하겠다
+        # (pybo/forms의) AnswerForm으로부터 폼 데이터를 전달받음
         # request.POST에는 화면에서 사용자가 입력한 내용들이 담겨있다.
         form = AnswerForm(request.POST)
         if form.is_valid():
             answer = form.save(commit=False)
+            # 답변의 작성자
+            # author 속성에 로그인 계정 저장  # request.user : 현재 로그인한 계정의 User 모델 객체
+            answer.author = request.user
             answer.create_date = timezone.now()
             answer.question = question
             answer.save()
@@ -68,20 +75,26 @@ def answer_create(request, question_id):
             # pybo:detail 별칭에 해당하는 URL은 question_id가 필요하므로 question.id를 인수로 전달
             return redirect('pybo:detail', question_id=question.id)
     # GET 요청 방식
-    # 답변 등록은 POST 방식만 사용되기 때문에 GET 방식으로 요청할 경우에는 HttpResponseNotAllowed 오류가 발생하도록 함
     else:
-        return HttpResponseNotAllowed('Only POST is possible')
+        # 바로 이전 코드 때에는, 로그인되어 있지 않은 상태에서, "답변등록" 버튼을 누르고 로그인 화면으로 이동해 로그인을 수행하면 405 오류가 발생한다.
+        # 답변 등록 시 POST가 아닌 경우 HttpResponseNotAllowed 오류를 발생시키도록 코딩했었기 때문에.
+        # 이전 코드 : return HttpResponseNotAllowed('Only POST is possible')
+        # 하지만, 아래 코드로 바꿔주면 이제 로그아웃 상태에서 "답변등록" 버튼을 누르더라도 로그인 수행 후 405 오류가 발생하지 않고 다시 질문 상세화면으로 잘 돌아간다.
+        # 수정 코드 : form = AnswerForm()
+        # (pybo/forms의) AnswerForm으로부터 폼 데이터를 전달받음
+        form = AnswerForm()
     context = {'question': question, 'form': form}
     # 답변과 관련된 질문('question':question)과 폼 데이터({'form': form})를 템플릿 파일(pybo/question_detail.html)에 적용하여 HTML을 생성한 후 리턴
     return render(request, 'pybo/question_detail.html', context)
 
 # 질문 등록 관련 함수 뷰
+@login_required(login_url='common:login')
 def question_create(request):
     # POST 요청 방식
     # 질문 등록 페이지에서 subject, content 항목에 값을 기입하고 '저장하기' 버튼을 누르면 /pybo/question/create/ 페이지를 POST 방식으로 요청한다.
     # (question_form.html의) form 태그에 action 속성을 지정하지 않아 현재 페이지가 디폴트 action으로 설정되기 때문
     if request.method == 'POST':
-        # question_create 함수는 (pybo/form의) QuestionForm()을 사용하겠다
+        # (pybo/forms의) QuestionForm으로부터 폼 데이터를 전달받음
         # request.POST에는 화면에서 사용자가 입력한 내용들이 담겨있다.
         form = QuestionForm(request.POST)  # request.POST를 인수로 QuestionForm을 생성할 경우, request.POST에 담긴 subject, content 값이 QuestionForm의 subject, content 속성에 자동으로 저장되어 객체가 생성
         # form.is_valid() : form이 유효한지를 검사  # 만약 form에 저장된 subject, content의 값이 올바르지 않다면 form에는 오류 메시지가 저장
@@ -92,13 +105,16 @@ def question_create(request):
             # 왜냐하면, QuestionForm에는 현재 subject, content 속성만 정의되어 있고 create_date 속성은 없기 때문이다. 이러한 이유로 임시 저장을 먼저 하여 question 객체를 리턴받고 create_date에 값을 설정한 후 question.save()로 실제 데이터를 저장하는 것
             # (create_date 속성은 데이터 저장 시점에 생성해야 하는 값이므로 QuestionForm에 등록하여 사용하지 않는다.)
             question = form.save(commit=False)  # 임시 저장하여 question 객체를 리턴받는다.
+            # 질문의 작성자
+            # author 속성에 로그인 계정 저장  # request.user : 현재 로그인한 계정의 User 모델 객체
+            question.author = request.user
             question.create_date = timezone.now()  # 실제 저장을 위해, 작성 일시를 설정
             question.save()  # 데이터를 실제로 저장
             return redirect('pybo:index')
     # GET 요청 방식
     # 질문 목록 화면에서 질문 '등록하기' 버튼을 클릭한 경우, /pybo/question/create/ 페이지가 GET 방식으로 요청되어 question_create 함수가 실행
     else:
-        # question_create 함수는 (pybo/forms의) QuestionForm()을 사용하겠다
+        # (pybo/forms의) QuestionForm으로부터 폼 데이터를 전달받음
         form = QuestionForm()
     context = {'form': form}  # {'form': form}은 관련 템플릿에서 질문 등록 시 사용할 폼 엘리먼트를 생성할 때 쓰일 것이다
     # 폼 데이터({'form': form})를 템플릿 파일(pybo/question_form.html)에 적용하여 HTML을 생성한 후 리턴
