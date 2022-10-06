@@ -1,5 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from . import views
 
 
 app_name = 'common'
@@ -15,4 +16,6 @@ urlpatterns = [
     # 로그아웃 기능 URL 매핑
     # 로그아웃 뷰는 따로 만들 필요 없이, django.contrib.auth 앱의 LogoutView를 사용
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    # 회원가입 페이지 URL 매핑
+    path('signup/', views.signup, name='signup'),
 ]

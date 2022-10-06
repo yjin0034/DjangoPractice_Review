@@ -12,11 +12,11 @@ from pybo.models import Question, Answer
 # 모델 폼(forms.ModelForm) : 모델(Model)과 연결된 폼으로, 폼을 저장하면 연결된 모델의 데이터를 저장할 수 있는 폼
 # 장고의 폼은 일반 폼(forms.Form)과 모델 폼(forms.ModelForm)이 있다.
 class QuestionForm(forms.ModelForm):
-    class Meta:  # 모델 폼은 이너 클래스인 Meta 클래스가 반드시 필요  # Meta 클래스에는 사용할 모델과 모델의 속성을 적어야 한다.
-        model = Question  # 사용할 모델
-        fields = ['subject', 'content']  # QuestionForm에서 사용할 Question 모델의 속성
+    class Meta:  # 모델 폼은 이너 클래스인 Meta 클래스가 반드시 필요  # Meta 클래스에는 사용할 모델과 모델의 속성(필드)을 적어야 한다.
+        model = Question  # 사용할 모델  # Question 모델과 연결
+        fields = ['subject', 'content']  # QuestionForm에서 사용할 Question 모델의 속성(필드)
         # labels 속성
-        # 질문 등록 페이지에 표시되는 'Subject', 'Content'를 한글로 표시하기
+        # 질문 등록 페이지에 표시되는 속성(필드) 이름을 한글로 표시하기
         labels = {
             'subject': '제목',
             'content': '내용',
@@ -25,8 +25,8 @@ class QuestionForm(forms.ModelForm):
 # Answer 모델과 연결된 폼
 class AnswerForm(forms.ModelForm):
     class Meta:
-        model = Answer  # 사용할 모델
-        fields = ['content']  # AnswerForm에서 사용할 Answer 모델의 속성
+        model = Answer  # 사용할 모델  # Answer 모델과 연결
+        fields = ['content']  # AnswerForm에서 사용할 Answer 모델의 속성(필드)
         labels = {
             'content': '답변내용'
         }
