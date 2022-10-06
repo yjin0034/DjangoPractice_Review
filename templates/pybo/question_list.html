@@ -31,6 +31,10 @@
                 {# 하드코딩 되어 있던 /pybo/{{ question.id }} 링크를 URL 네임스페이스와 URL 별칭을 활용한 {% url 'pybo:detail' question.id %}로 변경 #}
                 {# question.id는 pybo/urls.py URL 매핑에 정의된 <int:question_id>에 전달해야 하는 값 #}
                 <a href="{% url 'pybo:detail' question.id %}">{{ question.subject }}</a>
+                {# (질문의) 답변 개수 표시 #}
+                {% if question.answer_set.count > 0 %} {# (해당 질문의) 답변의 개수가 1개 이상이라면, #}
+                <span class="text-danger small mx-2">{{ question.answer_set.count }}</span> {# 답변 개수를 표시 #}
+                {% endif %}
             </td>
             <td>{{ question.create_date }}</td>
         </tr>
