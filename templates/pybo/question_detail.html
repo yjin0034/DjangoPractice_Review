@@ -34,21 +34,9 @@
     <!-- 답변 등록 -->
     <form action="{% url 'pybo:answer_create' question.id %}" method="post" class="my-3">  {# 링크된 해당 URL로, 작성된 form 데이터를 POST 방식으로 전달 #}
         {% csrf_token %}  {# csrf 공격 방지 코드. form으로 전송한 데이터가 실제 웹 페이지에서 작성한 데이터인지 판단하는 가늠자 역할 #}
-        {# (pybo/views의) answer_create 함수에서 form.is_valid() 가 실패할 경우 발생하는 오류의 내용을 표시하기 위해 오류를 표시하는 영역 #}
-        <!-- 오류표시 Start -->
-        {% if form.errors %}
-        <div class="alert alert-danger" role="alert">
-            {% for field in form %}
-            {% if field.errors %}
-            <div>
-                <strong>{{ field.label }}</strong>
-                {{ field.errors }}
-            </div>
-            {% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
-        <!-- 오류표시 End -->
+        {# (질문의) 답변 작성 시, 발생하는 오류의 내용 출력과 관련된 코드가 작성된 템플릿 파일 #}
+        {# (pybo/views/answer_views의) answer_create 함수에서 form.is_valid() 가 실패할 경우 발생하는 오류의 내용을 표시하기 위한 템플릿 코드 #}
+        {% include "form_errors.html" %}
         <div class="mb-3">  {# mb-3 : 하(bottom) 마진값 3 #}
             <label for="content" class="form-label">답변내용</label>  {# form-control, form-label : 부트스트랩 Form 컴포넌트 #}
             <textarea name="content" id="content" class="form-control" rows="10"></textarea>  {# <textarea></textarea> : 답변의 내용을 입력할 수 있는 텍스트창 #}

@@ -23,6 +23,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from pybo import views
 
 
 urlpatterns = [
@@ -32,4 +33,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # pybo/ 로 시작하는 페이지를 요청하면, pybo/urls.py 파일의 매핑 정보를 읽어서 처리하도록 함
     path('pybo/', include('pybo.urls')),
+    # common/ 으로 시작하는 URL은 모두 common/urls.py 파일을 참조하게 함
+    path('common/', include('common.urls')),
+    # '/'에 해당되는 path
+    # / 페이지 요청에 대해 아래의 해당 path('', views.index, name='index')가 작동하여 pybo/views.py 파일의 index 함수 뷰가 실행됨
+    # 메인 페이지인 듯
+    path('', views.index, name='index'),
 ]

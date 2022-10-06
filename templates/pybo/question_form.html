@@ -7,21 +7,9 @@
     {# 동일한 템플릿을 여러 기능에서 함께 사용할 경우에는, 이처럼 form의 action 속성을 비워두는 트릭을 종종 사용 #}
     <form method="post">
         {% csrf_token %}
-        {# (pybo/views의) question_create 함수에서 form.is_valid() 가 실패할 경우 발생하는 오류의 내용을 표시하기 위해 오류를 표시하는 영역 #}
-        <!-- 오류표시 Start -->
-        {% if form.errors %}
-        <div class="alert alert-danger" role="alert">
-            {% for field in form %}
-            {% if field.errors %}
-            <div>
-                <strong>{{ field.label }}</strong>
-                {{ field.errors }}
-            </div>
-            {% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
-        <!-- 오류표시 End -->
+        {# 질문 작성 시, 발생하는 오류의 내용 출력과 관련된 코드가 작성된 템플릿 파일 #}
+        {# (pybo/views/question_views의) question_create 함수에서 form.is_valid() 가 실패할 경우 발생하는 오류의 내용을 표시하기 위한 템플릿 코드 #}
+        {% include "form_errors.html" %}
         {# ({{ form.as_p }}로 자동으로 생성되는 HTML 대신,) 제목과 내용에 해당되는 HTML코드를 직접 작성하기 #}
         <div class="mb-3">
             <label for="subject" class="form-label">제목</label>
