@@ -5,9 +5,10 @@
 <div class="container my-3">  {# 부트스트랩 컨테이너 #}
     <table class="table">  {# 부트스트랩 테이블 태그 #}
         <thead>
-        <tr class="table-dark">
+        <tr class="text-center table-dark">
             <th>번호</th>
-            <th>제목</th>
+            <th style="width:50%">제목</th>  {# 제목의 너비가 전체에서 50%를 차지하도록 설정 #}
+            <th>글쓴이</th>  {# 글쓴이 항목 추가 #}
             <th>작성일시</th>
         </tr>
         </thead>
@@ -15,7 +16,7 @@
         {# question_list : render 함수로 전달받은 질문 목록 데이터 #}
         {% if question_list %}  {# question_list가 있다면, #}
         {% for question in question_list %}  {# question_list를 순회하며 순차적으로 하나씩 question에 대입 #}
-        <tr>
+        <tr class="text-center">  {# 테이블 번호 #}
             <td>
                 {# 테이블에 표시할 질문 게시글 번호 #}
                 <!-- 번호 = 전체 건수 - 시작 인덱스 - 현재 인덱스 + 1 -->
@@ -24,7 +25,7 @@
                 {# 직접 만든 템플릿 필터(pybo_filter.py) sub 함수 사용 #}
                 {{ question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1 }}
             </td>
-            <td>
+            <td class="text-start">  {# 테이블 제목 #}
                 {# 질문 id(question.id)를 받아와, 받아온 id와 관련된 질문 제목(question.subject)을 링크된 주소에 출력 #}
                 {# {{ question.id }} : for 문에 의해 대입된 question 객체의 id 번호 #}
                 {# {{ question.subject }} : for 문에 의해 대입된 question 객체의 제목 #}
@@ -36,12 +37,13 @@
                 <span class="text-danger small mx-2">{{ question.answer_set.count }}</span> {# 답변 개수를 표시 #}
                 {% endif %}
             </td>
-            <td>{{ question.create_date }}</td>
+            <td>{{ question.author.username }}</td>  {# 질문 글쓴이 #}
+            <td>{{ question.create_date }}</td>  {# 작성 일시 #}
         </tr>
         {% endfor %}
         {% else %}  {# question_list가 없다면, #}
         <tr>
-            <td colspan="3">질문이 없습니다.</td>
+            <td colspan="4">질문이 없습니다.</td>  {# 테이블 항목 4개 설정 #}
         </tr>
         {% endif %}
         </tbody>
