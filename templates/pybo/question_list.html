@@ -1,5 +1,6 @@
 <!-- 질문 목록 관련 템플릿 -->
 {% extends 'base.html' %}  {# base.html 템플릿 상속 #}
+{% load pybo_filter %}  {# pybo_filter.py 템플릿 필터 사용 #}
 {% block content %}
 <div class="container my-3">  {# 부트스트랩 컨테이너 #}
     <table class="table">  {# 부트스트랩 테이블 태그 #}
@@ -16,6 +17,14 @@
         {% for question in question_list %}  {# question_list를 순회하며 순차적으로 하나씩 question에 대입 #}
         <tr>
             <td>{{ forloop.counter }}</td>  {# 질문 게시글 번호 #}  {# forloop.counter : 루프 내의 순서로, 1부터 표시 #}
+            <td>
+                {# 테이블에 표시할 질문 게시글 번호 #}
+                <!-- 번호 = 전체 건수 - 시작 인덱스 - 현재 인덱스 + 1 -->
+                {# question_list.paginator.count : 전체 건수, question_list.start_index : 시작 인덱스, forloop.counter0 : 현재 인덱스 #}
+                {# forloop.counter0 : 루프 내의 순서로 0부터 표시 #}
+                {# 직접 만든 템플릿 필터(pybo_filter.py) sub 함수 사용 #}
+                {{ question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1 }}
+            </td>
             <td>
                 {# 질문 id(question.id)를 받아와, 받아온 id와 관련된 질문 제목(question.subject)을 링크된 주소에 출력 #}
                 {# {{ question.id }} : for 문에 의해 대입된 question 객체의 id 번호 #}

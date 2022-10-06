@@ -18,16 +18,16 @@ class Question(models.Model):
     # 작성 일시
     create_date = models.DateTimeField()
 
-    # __str__ 메서드
-    # 장고 모델에서 클래스의 오브젝트를 출력할 때 나타날 내용들을 결정하는 메서드
+    # __str__ 메서드(string 메서드)
+    # : 장고 모델에서 클래스의 오브젝트를 출력할 때 나타날 내용들을 결정하는 메서드
     def __str__(self):
         # 모델 데이터 조회 시, Question 모델에 저장된 값들의 제목이 표시되도록 설정함
         return self.subject  # 제목 표시
 
 # 답변 모델
 class Answer(models.Model):
-    # (해당 답변과 관련된) 질문
-    # models.ForeignKey : 기존 타 모델(question)을 속성으로 연결
+    # 질문 모델을 속성으로 연결. (해당 답변과 관련된) 질문
+    # models.ForeignKey : 타 모델(Question)을 외래키로 연결
     # on_delete=models.CASCADE : 해당 답변과 연결된 질문이 삭제될 경우 답변도 함께 삭제됨
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     # 내용

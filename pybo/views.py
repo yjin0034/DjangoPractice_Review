@@ -14,7 +14,7 @@ from .forms import QuestionForm, AnswerForm
 from django.core.paginator import Paginator
 
 
-# index 페이지 관련 함수
+# index 페이지 관련 함수 뷰
 # 매개변수 request는 HTTP 요청 객체
 def index(request):
     # 페이지
@@ -36,7 +36,7 @@ def index(request):
     # render 함수 : 파이썬 데이터를 템플릿에 적용하여 HTML로 반환하는 함수
     return render(request, 'pybo/question_list.html', context)
 
-# 질문 상세 페이지 관련 함수
+# 질문 상세 페이지 관련 함수 뷰
 # 매개변수 question_id에는 URL 매핑시 저장된 question_id가 전달
 def detail(request, question_id):
     # 전달받은 id와 관련된 (Question의) 질문 데이터 얻기
@@ -49,7 +49,7 @@ def detail(request, question_id):
     # 관련 질문으로 얻은 question 데이터(context)를 템플릿 파일(pybo/question_detail.html)에 적용하여 HTML을 생성한 후 리턴
     return render(request, 'pybo/question_detail.html', context)
 
-# 답변 등록 관련 함수
+# 답변 등록 관련 함수 뷰
 def answer_create(request, question_id):
     # 전달받은 id와 관련된 (Question의) 질문 데이터 얻기
     question = get_object_or_404(Question, pk=question_id)
@@ -75,7 +75,7 @@ def answer_create(request, question_id):
     # 답변과 관련된 질문('question':question)과 폼 데이터({'form': form})를 템플릿 파일(pybo/question_detail.html)에 적용하여 HTML을 생성한 후 리턴
     return render(request, 'pybo/question_detail.html', context)
 
-# 질문 등록 관련 함수
+# 질문 등록 관련 함수 뷰
 def question_create(request):
     # POST 요청 방식
     # 질문 등록 페이지에서 subject, content 항목에 값을 기입하고 '저장하기' 버튼을 누르면 /pybo/question/create/ 페이지를 POST 방식으로 요청한다.
