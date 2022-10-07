@@ -26,9 +26,6 @@ urlpatterns = [
     # question_id 에 2가 저장되고, views.detail 함수 뷰도 실행.
     # name='detail' : 해당 URL에 대해 URL 별칭 설정
     path('<int:question_id>/', views.detail, name='detail'),
-    # 답변 등록 기능 URL 매핑
-    # pybo/answer/create/[정수형 숫자]로 시작하는 페이지를 요청하면, 해당 정수형 숫자를 question_id에 저장하고, views.answer_create 함수 뷰를 호출
-    path('answer/create/<int:question_id>/', views.answer_create, name='answer_create'),
     # 질문 등록 기능 URL 매핑
     # pybo/question/create로 시작하는 페이지를 요청하면, views.question_create 함수 뷰를 호출
     path('question/create/', views.question_create, name='question_create'),
@@ -36,5 +33,11 @@ urlpatterns = [
     path('question/modify/<int:question_id>/', views.question_modify, name='question_modify'),
     # 질문 삭제 기능 URL 매핑
     path('question/delete/<int:question_id>/', views.question_delete, name='question_delete'),
-
+    # 답변 등록 기능 URL 매핑
+    # pybo/answer/create/[정수형 숫자]로 시작하는 페이지를 요청하면, 해당 정수형 숫자를 question_id에 저장하고, views.answer_create 함수 뷰를 호출
+    path('answer/create/<int:question_id>/', views.answer_create, name='answer_create'),
+    # 답변 수정 기능 URL 매핑
+    path('answer/modify/<int:answer_id>/', views.answer_modify, name='answer_modify'),
+    # 답변 삭제 기능 URL 매핑
+    path('answer/delete/<int:answer_id>/', views.answer_delete, name='answer_delete'),
 ]
