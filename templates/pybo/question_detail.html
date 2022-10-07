@@ -1,5 +1,6 @@
 <!-- 질문 상세 페이지 관련 템플릿 -->
 {% extends 'base.html' %}  {# base.html 템플릿 상속 #}
+{% load pybo_filter %}  {# pybo_filter.py 템플릿 필터 사용 #}
 {% block content %}  {# base.html 본문 오버라이딩 #}
 <div class="container my-3">  {# 부트스트랩 컨테이너 #}
     <!-- 오류 message 표시 -->
@@ -17,9 +18,9 @@
     <h2 class="border-bottom py-2">{{ question.subject }}</h2>  {# 질문 제목 #}  {# border-bottom : 아래방향 테두리 선 #} {# py-2 : 상하 패딩값 2 #}
     <div class="card my-3">  {# 부트스트랩 Card 컴포넌트 #}  {# my-3 : 상하 마진값 3 #}
         <div class="card-body">
-            {# CSS white-space 속성 : 요소의 공백을 어떻게 처리할지 정의하는 속성 #}
-            {# white-space의 pre-line 속성 값 : 여러 개의 공백은 메꾸어져 하나의 공백이 됨. 박스의 영역이 넘어가는 내용은 줄 바꿔 표시 #}
-            <div class="card-text" style="white-space: pre-line;">{{ question.content }}</div>  {# 질문 내용 #}
+            {# 질문 내용에 마크다운 문법 적용 가능하도록 코드 추가 #}
+            {# 마크다운 활용을 위해 직접 만든 템플릿 필터(pybo_filter.py) mark 함수 사용 #}
+            <div class="card-text">{{ question.content|mark }}</div>  {# 질문 내용 #}
             <div class="d-flex justify-content-end">  {# d-flex justify-content-end : 컴포넌트의 우측 정렬 #}
                 <!-- 질문 수정 일시 -->
                 {% if question.modify_date %}
@@ -69,7 +70,9 @@
     <a id="answer_{{ answer.id }}"></a>
     <div class="card my-3">
         <div class="card-body">
-            <div class="card-text" style="white-space: pre-line;">{{ answer.content }}</div>  {# 답변 내용 #}
+            {# 답변 내용에 마크다운 문법 적용 가능하도록 코드 추가 #}
+            {# 마크다운 활용을 위해 직접 만든 템플릿 필터(pybo_filter.py) mark 함수 사용 #}
+            <div class="card-text">{{ answer.content|mark }}</div>  {# 답변 내용 #}
             <div class="d-flex justify-content-end">
                 <!-- 답변 수정 일시 -->
                 {% if answer.modify_date %}
