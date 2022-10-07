@@ -1,7 +1,17 @@
 <!-- 질문 상세 페이지 관련 템플릿 -->
 {% extends 'base.html' %}  {# base.html 템플릿 상속 #}
-{% block content %}
+{% block content %}  {# base.html 본문 오버라이딩 #}
 <div class="container my-3">  {# 부트스트랩 컨테이너 #}
+    <!-- 오류 message 표시 -->
+    {# 질문 수정 시, 비정상적인 방법으로 수정할 경우 해당 오류 출력 #}
+    {% if messages %}
+    <div class="alert alert-danger my-3" role="alert">
+    {% for message in messages %}
+        <strong>{{ message.tags }}</strong>
+        <ul><li>{{ message.message }}</li></ul>
+    {% endfor %}
+    </div>
+    {% endif %}
     <!-- 질문 -->
     {# question : render 함수로 전달받은 질문 데이터 #}
     <h2 class="border-bottom py-2">{{ question.subject }}</h2>  {# 질문 제목 #}  {# border-bottom : 아래방향 테두리 선 #} {# py-2 : 상하 패딩값 2 #}
@@ -16,6 +26,22 @@
                     <div>{{ question.create_date }}</div>  {# 질문 작성일시 #}
                 </div>
             </div>
+            <!-- 질문 추천, 수정, 삭제 버튼 -->
+            <div class="my-3">
+                {# 로그인한 사용자와 질문 작성자가 동일한 경우에만 노출되도록 함 #}
+                {% if request.user == question.author %}
+                {# 수정 버튼 #}
+                {# 질문 id(question.id)를 받아와, 링크된 해당 URL로 전달 #}
+                <a href="{% url 'pybo:question_modify' question.id %}"
+                   class="btn btn-sm btn-outline-secondary">수정</a>
+                {# 삭제 버튼 #}
+                {# href 속성값을 javascript:void(0)로 설정하면 해당 링크를 클릭해도 아무런 동작도 하지 않는다. #}
+                {# 삭제를 실행할 URL을 얻기 위해 data-uri 속성을 추가하고, <삭제> 버튼이 눌리는 이벤트를 확인할 수 있도록 class 속성에 "delete" 항목을 추가 #}
+                {# data-uri 속성은 자바스크립트에서 클릭 이벤트 발생시 this.dataset.uri와 같이 사용하여 그 값을 얻을 수 있다. #}
+                {# href에 삭제 URL을 직접 사용하지 않고 이러한 방식을 사용하는 이유는, 삭제 버튼을 클릭했을 때 "정말로 삭제하시겠습니까?" 와 같은 재확인창이 필요하기 때문 #}
+                <a href="javascript:void(0)" class="delete btn btn-sm btn-outline-secondary"
+                    data-uri="{% url 'pybo:question_delete' question.id %}">삭제</a>
+                {% endif %}
         </div>
     </div>
     <!-- 답변 -->
@@ -46,4 +72,21 @@
         <input type="submit" value="답변등록" class="btn btn-primary">  {# 답변등록 버튼. 해당 버튼을 클릭하면 작성한 form 데이터를 전달 #} {# btn btn-primary : 부트스트랩 버튼 컴포넌트 #}
     </form>
 </div>
+{% endblock %}
+<!-- 재확인 창 관련 자바스크립트 코드 -->
+{% block script %}  {# base.html JS 오버라이딩 #}
+<script type='text/javascript'>
+<!-- (질문 또는 답변의) 삭제 버튼 관련 재확인 창 -->
+{# 삭제 버튼을 눌렀을 때, 삭제 재확인 창("정말로 삭제하시겠습니까?")을 호출하기 위한 자바스크립트 코드 #}
+{# 삭제 버튼 관련 코드에 class="delete"가 적용되어 있으므로, delete라는 클래스를 포함하는 컴포넌트(예:버튼이나 링크)를 클릭하면 "정말로 삭제하시겠습니까?" 라는 질문을 하고 "확인"을 선택했을 때 해당 컴포넌트의 data-uri 값으로 URL 호출을 하라는 의미 #}
+{# 아래와 같은 스크립트를 추가하면 "삭제" 버튼을 클릭하고 "확인"을 선택하면 data-uri 속성에 해당하는 {% url 'pybo:question_delete' question.id %}(또는, {% url 'pybo:answer_delete' answer.id %})이 호출될 것 #}
+const delete_elements = document.getElementsByClassName("delete");
+Array.from(delete_elements).forEach(function(element) {
+    element.addEventListener('click', function() {
+        if(confirm("정말로 삭제하시겠습니까?")) {
+            location.href = this.dataset.uri;
+        }
+    });
+});
+</script>
 {% endblock %}

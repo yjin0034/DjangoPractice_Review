@@ -29,8 +29,12 @@ urlpatterns = [
     # 답변 등록 기능 URL 매핑
     # pybo/answer/create/[정수형 숫자]로 시작하는 페이지를 요청하면, 해당 정수형 숫자를 question_id에 저장하고, views.answer_create 함수 뷰를 호출
     path('answer/create/<int:question_id>/', views.answer_create, name='answer_create'),
-
     # 질문 등록 기능 URL 매핑
     # pybo/question/create로 시작하는 페이지를 요청하면, views.question_create 함수 뷰를 호출
     path('question/create/', views.question_create, name='question_create'),
+    # 질문 수정 기능 URL 매핑
+    path('question/modify/<int:question_id>/', views.question_modify, name='question_modify'),
+    # 질문 삭제 기능 URL 매핑
+    path('question/delete/<int:question_id>/', views.question_delete, name='question_delete'),
+
 ]

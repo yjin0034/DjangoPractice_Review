@@ -4,11 +4,11 @@
 # 사용자가 입력한 URL에 따라, 모델(Model)에서 필요한 데이터를 가져와 뷰에서 가공해 보여주며, 템플릿(Template)에 전달하는 역할을 한다.
 # 장고의 뷰 파일(views.py)은 요청에 따른 처리 논리를 정의한다.
 # 즉, 사용자가 요청하는 값(request)을 받아 모델과 템플릿을 중개하는 역할을 한다.
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import Question, Answer
-from django.http import HttpResponseNotAllowed
 from .forms import QuestionForm, AnswerForm
 from django.core.paginator import Paginator
 
@@ -31,21 +31,21 @@ def index(request):
     page_obj = paginator.get_page(page)
     # 질문 목록 데이터를 딕셔너리로 저장
     context = {'question_list': page_obj}  # question_list는 페이징 객체(page_obj)
-    # 데이터(context)를 템플릿 파일(pybo/question_list.html)에 적용하여 HTML을 생성한 후 리턴
+    # 데이터({'question_list': page_obj})를 템플릿 파일(pybo/question_list.html)에 적용하여 HTML을 생성한 후 리턴
     # render 함수 : 파이썬 데이터를 템플릿에 적용하여 HTML로 반환하는 함수
     return render(request, 'pybo/question_list.html', context)
 
 # 질문 상세 페이지 관련 함수 뷰
 # 매개변수 question_id에는 URL 매핑시 저장된 question_id가 전달
 def detail(request, question_id):
-    # 전달받은 id와 관련된 (Question의) 질문 데이터 얻기
+    # (인자로 받은) pk(question_id, 질문 id) 값에 해당하는 질문 데이터 얻기. (models의 Question 모델로부터) 데이터를 가져온다.
     # pk : 모델의 기본키(Primary Key)  # 해당 모델의 pk는 id이다.
     # get_object_or_404() : 존재하지 않는 데이터를 요청할 경우 404 페이지 출력
     # question : 질문 데이터
     question = get_object_or_404(Question, pk=question_id)
     # 질문 데이터를 딕셔너리로 저장
     context = {'question': question}
-    # 관련 질문으로 얻은 question 데이터(context)를 템플릿 파일(pybo/question_detail.html)에 적용하여 HTML을 생성한 후 리턴
+    # 관련 질문으로 얻은 question 데이터({'question': question})를 템플릿 파일(pybo/question_detail.html)에 적용하여 HTML을 생성한 후 리턴
     return render(request, 'pybo/question_detail.html', context)
 
 # 답변 등록 관련 함수 뷰
@@ -55,7 +55,7 @@ def detail(request, question_id):
 # 로그아웃 상태에서 @login_required 어노테이션이 적용된 함수가 호출되면 자동으로 로그인 화면(login_url='common:login')으로 이동하게 됨
 @login_required(login_url='common:login')
 def answer_create(request, question_id):
-    # 전달받은 id와 관련된 (Question의) 질문 데이터 얻기
+    # (인자로 받은) 질문 id(question_id)에 해당하는 질문 데이터 얻기. (models의 Question 모델로부터) 데이터를 가져온다.
     question = get_object_or_404(Question, pk=question_id)
     # POST 요청 방식
     if request.method == "POST":
@@ -84,7 +84,7 @@ def answer_create(request, question_id):
         # (pybo/forms의) AnswerForm으로부터 폼 데이터를 전달받음
         form = AnswerForm()
     context = {'question': question, 'form': form}
-    # 답변과 관련된 질문('question':question)과 폼 데이터({'form': form})를 템플릿 파일(pybo/question_detail.html)에 적용하여 HTML을 생성한 후 리턴
+    # 질문 데이터({'question': question})와 폼 데이터({'form': form})를 템플릿 파일(pybo/question_detail.html)에 적용하여 HTML을 생성한 후 리턴
     return render(request, 'pybo/question_detail.html', context)
 
 # 질문 등록 관련 함수 뷰
@@ -119,3 +119,52 @@ def question_create(request):
     context = {'form': form}  # {'form': form}은 관련 템플릿에서 질문 등록 시 사용할 폼 엘리먼트를 생성할 때 쓰일 것이다
     # 폼 데이터({'form': form})를 템플릿 파일(pybo/question_form.html)에 적용하여 HTML을 생성한 후 리턴
     return render(request, 'pybo/question_form.html', context)
+
+# 질문 수정 관련 함수 뷰
+@login_required(login_url='common:login')
+def question_modify(request, question_id):
+    # (인자로 받은) 질문 id(question_id)에 해당하는 질문 데이터 얻기. (models의 Question 모델로부터) 데이터를 가져온다.
+    question = get_object_or_404(Question, pk=question_id)
+    # 로그인한 사용자와 수정하려는 질문의 작성자가 다를 경우에는, "수정권한이 없습니다"라는 오류를 발생
+    if request.user != question.author:
+        # messages 모듈 : 장고가 제공하는 모듈로 넌필드 오류(non-field error)를 발생시킬 경우에 사용
+        messages.error(request, '수정 권한이 없습니다')
+        # 오류 발생 후 질문 상세 화면으로 이동  # pybo:detail 별칭에 해당하는 페이지로 이동
+        # pybo:detail 별칭에 해당하는 URL은 question_id가 필요하므로 question.id를 인수로 전달
+        return redirect('pybo:detail', question_id)
+    # POST 요청 방식
+    # 동작 예) 질문 수정 화면에서 "저장하기" 버튼을 클릭하면, http://localhost:8000/pybo/question/modify/2/ 페이지가 POST 방식으로 호출되어 데이터가 수정됨
+    if request.method == "POST":
+        # QuestionForm(request.POST, instance=question) : instance를 기준으로 QuestionForm을 생성하지만, request.POST의 값으로 덮어쓰라는 의미
+        # 따라서 질문 수정 화면에서 제목 또는 내용을 변경하여 POST 요청하면, 변경된 내용이 QuestionForm에 저장될 것.
+        # request.POST에는 화면에서 사용자가 입력한 내용들이 담겨있다.
+        form = QuestionForm(request.POST, instance=question)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.modify_date = timezone.now()  # 수정 일시 저장  # 수정 일시는 현재 일시로 지정
+            question.save()
+            return redirect('pybo:detail', question_id=question.id)
+    # GET 요청 방식
+    # 동작 예) 질문 상세 화면에서 "수정" 버튼을 클릭하면, http://localhost:8000/pybo/question/modify/2/ 페이지가 GET 방식으로 호출되어 질문 수정 화면이 보여짐
+    else:
+        # 폼 생성시 이처럼 instance 값을 지정하면, 폼의 속성 값이 instance의 값으로 채워진다. 따라서 질문을 수정하는 화면에서 제목과 내용이 채워진 채로 보이게 됨.
+        # 질문 수정 화면에 조회된 질문의 제목과 내용이 반영될 수 있도록 다음과 같이 폼을 생성
+        form = QuestionForm(instance=question)
+    context = {'form': form}
+    # 폼 데이터({'form': form})를 템플릿 파일(pybo/question_form.html)에 적용하여 HTML을 생성한 후 리턴
+    return render(request, 'pybo/question_form.html', context)
+
+# 질문 삭제 관련 함수 뷰
+@login_required(login_url='common:login')
+def question_delete(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    # 로그인한 사용자와 삭제하려는 질문의 글쓴이가 다를 경우에는, "삭제 권한이 없습니다"라는 오류를 발생
+    if request.user != question.author:
+        messages.error(request, '삭제 권한이 없습니다')
+        # 질문 상세 페이지로 다시 이동
+        return redirect('pybo:detail', question_id=question.id)
+    else:
+        # 해당 질문 삭제
+        question.delete()
+        # 삭제 후, index 페이지로 이동
+    return redirect('pybo:index')

@@ -1,6 +1,6 @@
 <!-- 로그인 관련 템플릿 -->
 {% extends "base.html" %}  {# base.html 템플릿 상속 #}
-{% block content %}
+{% block content %}  {# base.html 본문 오버라이딩 #}
 <div class="container my-3">
     <form method="post" action="{% url 'common:login' %}">  {# 링크된 해당 URL로, 작성된 form 데이터를 POST 방식으로 전달 #}
         {% csrf_token %}

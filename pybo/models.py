@@ -23,6 +23,11 @@ class Question(models.Model):
     content = models.TextField()
     # 작성 일시
     create_date = models.DateTimeField()
+    # 수정 일시 컬럼
+    # null=True : 데이터베이스에서 해당 컬럼에 null을 허용한다는 의미
+    # blank=True : form.is_valid()를 통한 입력 데이터 검증 시 값이 없어도 된다는 의미
+    # 수정 일시는 수정한 경우에만 생성되는 데이터이므로, 어떤 조건으로든 값을 비워둘 수 있음을 의미하는 null=True, blank=True를 지정
+    modify_date = models.DateTimeField(null=True, blank=True)
 
     # __str__ 메서드(string 메서드)
     # : 장고 모델에서 클래스의 오브젝트를 출력할 때 나타날 내용들을 결정하는 메서드
@@ -42,3 +47,5 @@ class Answer(models.Model):
     content = models.TextField()
     # 작성 일시
     create_date = models.DateTimeField()
+    # 수정 일시 컬럼
+    modify_date = models.DateTimeField(null=True, blank=True)
