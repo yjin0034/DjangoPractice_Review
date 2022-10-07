@@ -61,12 +61,12 @@
     </div>
     <!-- 답변 -->
     <h5 class="border-bottom my-3 py-2">{{ question.answer_set.count }}개의 답변이 있습니다.</h5>  {# question.answer_set.count : 답변의 총 개수 #}
-    {# 답변 작성(또는 수정) 후 작성한 해당 답변글 위치로 다시 이동하게 하는 앵커 태그 #}
-    {# 답글을 작성 또는 수정한 후에 항상 페이지 상단으로 스크롤이 이동되는 문제를 해결하기 위해, URL 호출시 원하는 위치로 이동시켜 주는 HTML 앵커(anchor) 태그를 활용하여 해결한다. #}
+    {% for answer in question.answer_set.all %}  {# question.answer_set.all을 순회하며 순차적으로 하나씩 answer에 대입 #}
+    {# 답변 작성(또는 수정, 추천) 후 작성한 해당 답변글 위치로 다시 이동하게 하는 앵커 태그 #}
+    {# 답글을 작성한 후에 항상 페이지 상단으로 스크롤이 이동되는 문제를 해결하기 위해, URL 호출시 원하는 위치로 이동시켜 주는 HTML 앵커(anchor) 태그를 활용하여 해결한다. #}
     {# 예를 들어, HTML 중간에 <a id="django"></a> 라는 앵커 태그가 있다면 이 HTML을 호출하는 URL 뒤에 #django 라고 붙여주면 해당 페이지가 호출되면서 해당 앵커로 스크롤이 이동된다. #}
     {# 앵커 태그의 name 속성은 유일한 값이어야 하므로 answer_{{ answer.id }}와 같이 답변 id를 사용할 것이다. #}
     <a id="answer_{{ answer.id }}"></a>
-    {% for answer in question.answer_set.all %}  {# question.answer_set.all을 순회하며 순차적으로 하나씩 answer에 대입 #}
     <div class="card my-3">
         <div class="card-body">
             <div class="card-text" style="white-space: pre-line;">{{ answer.content }}</div>  {# 답변 내용 #}

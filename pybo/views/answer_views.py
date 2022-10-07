@@ -30,13 +30,14 @@ def answer_create(request, question_id):
             answer.question = question
             answer.save()
             # redirect 함수 : 페이지 이동을 위한 함수
-            # 답변을 생성한 후 질문 상세 화면을 다시 보여주기 위해 redirect 함수를 사용  # pybo:detail 별칭에 해당하는 페이지로 이동
+            # 답변을 생성(또는 수정, 추천)한 후 질문 상세 화면을 다시 보여주기 위해 redirect 함수를 사용  # pybo:detail 별칭에 해당하는 페이지로 이동
             # pybo:detail 별칭에 해당하는 URL은 question_id가 필요하므로 question.id를 인수로 전달
-            # '{}#answer_{}'.format(resolve_url()) : 답변을 작성, 수정한 후 답변글 위치로 다시 이동시키기 위한 앵커 태그 관련 코드
+            # '{}#answer_{}'.format(resolve_url()) : 답변을 작성한 후 답변글 위치로 다시 이동시키기 위한 앵커 태그 관련 코드
             # resolve_url : 실제 호출되는 URL 문자열을 리턴하는 장고의 함수
             # pybo:detail URL에 #answer_2와 같은 앵커를 추가하기 위해 resolve_url 함수를 사용
             return redirect('{}#answer_{}'.format(
                 resolve_url('pybo:detail', question_id=question.id), answer.id))
+
     # GET 요청 방식
     else:
         # 바로 이전 코드 때에는, 로그인되어 있지 않은 상태에서, "답변등록" 버튼을 누르고 로그인 화면으로 이동해 로그인을 수행하면 405 오류가 발생한다.
@@ -66,7 +67,8 @@ def answer_modify(request, answer_id):
             answer = form.save(commit=False)
             answer.modify_date = timezone.now()
             answer.save()
-            return redirect('pybo:detail', question_id=answer.question.id)
+            return redirect('{}#answer_{}'.format(
+                resolve_url('pybo:detail', question_id=answer.question.id), answer.id))
     else:
         form = AnswerForm(instance=answer)
     context = {'answer': answer, 'form': form}
@@ -95,4 +97,5 @@ def answer_vote(request, answer_id):
         # 동일한 사용자가 동일한 질문을 여러 번 추천하더라도 추천수가 증가하지는 않는다. ManyToManyField 내부에서 자체적으로 이와 같이 처리한다.
         answer.voter.add(request.user)
     # 질문 상세 페이지로 이동
-    return redirect('pybo:detail', question_id=answer.question.id)
+    return redirect('{}#answer_{}'.format(
+        resolve_url('pybo:detail', question_id=answer.question.id), answer.id))
