@@ -23,7 +23,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from pybo import views
+from pybo.views import base_views
 
 
 urlpatterns = [
@@ -38,5 +38,5 @@ urlpatterns = [
     # '/'에 해당되는 path
     # / 페이지 요청에 대해 아래의 해당 path('', views.index, name='index')가 작동하여 pybo/views.py 파일의 index 함수 뷰가 실행됨
     # 메인 페이지인 듯
-    path('', views.index, name='index'),
+    path('', base_views.index, name='index'),
 ]
