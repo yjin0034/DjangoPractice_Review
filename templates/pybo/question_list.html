@@ -3,6 +3,24 @@
 {% load pybo_filter %}  {# pybo_filter.py 템플릿 필터 사용 #}
 {% block content %}  {# base.html 본문 오버라이딩 #}
 <div class="container my-3">  {# 부트스트랩 컨테이너 #}
+    <!-- 검색 창 -->
+    {# 태그 상단 우측에 검색어를 입력할 수 있는 텍스트창을 생성 #}
+    <div class="row my-3">
+        <div class="col-6">
+            {# 질문 등록하기 버튼 생성 #}
+            {# 맨 밑에 있던 "질문 등록하기" 버튼을 검색 창의 좌측으로 이동 #}
+            <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">질문 등록하기</a>  {# 버튼을 클릭하면, pybo:question_create 별칭에 해당되는 URL이 호출 #}
+        </div>
+        <div class="col-6">
+            <div class="input-group">
+                {# id="search_kw" : 자바 스크립트에서 이 텍스트창에 입력된 값을 읽기 위해 다음처럼 id 속성을 추가함 #}
+                <input type="text" id="search_kw" class="form-control" value="{{ kw|default_if_none:'' }}">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <table class="table">  {# 부트스트랩 테이블 태그 #}
         <thead>
         <tr class="text-center table-dark">
@@ -55,7 +73,10 @@
         <li class="page-item">
             {# 이전 페이지가 존재한다면, 이전 페이지 번호로 이동 #}
             {# {{ question_list.previous_page_number }} : 이전 페이지 번호 #}
-            <a class="page-link" href="?page={{ question_list.previous_page_number }}">이전</a>
+            {# ?page=1 처럼 직접 파라미터를 코딩하는 방식에서, 값을 읽어 폼에 설정할 수 있도록 변경 #}
+            {# 모든 페이지 링크를 href 속성에 직접 입력하는 대신, data-page 속성으로 값을 읽을 수 있도록 변경 #}
+            <a class="page-link" data-page="{{ question_list.previous_page_number }}"
+               href="javascript:void(0)">이전</a>
         </li>
         {% else %}  {# 이전 페이지가 없는 경우에는, "이전" 링크가 비활성화되도록 함 #}
         <li class="page-item disabled">
@@ -70,11 +91,17 @@
         {% if page_number == question_list.number %}  {# 해당 페이지 번호가 현재 페이지 번호와 같은지 체크 #}
         {# 현재 페이지 번호라면, 해당 번호에 활성화(active)되어 표시됨. 파란색으로 색칠됨. #}  {# 즉, 현재 페이지 번호인 해당 번호는 색칠해 티나게 표시하겠다는 말. #}
         <li class="page-item active" aria-current="page">
-            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+            {# ?page=1 처럼 직접 파라미터를 코딩하는 방식에서, 값을 읽어 폼에 설정할 수 있도록 변경 #}
+            {# 모든 페이지 링크를 href 속성에 직접 입력하는 대신, data-page 속성으로 값을 읽을 수 있도록 변경 #}
+            <a class="page-link" data-page="{{ page_number }}"
+                href="javascript:void(0)">{{ page_number }}</a>
         </li>
         {% else %}  {# 그렇지 않다면, 그냥 번호만 표시됨. 현재 페이지 번호 외의 번호들 #}
         <li class="page-item">
-            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+            {# ?page=1 처럼 직접 파라미터를 코딩하는 방식에서, 값을 읽어 폼에 설정할 수 있도록 변경 #}
+            {# 모든 페이지 링크를 href 속성에 직접 입력하는 대신, data-page 속성으로 값을 읽을 수 있도록 변경 #}
+            <a class="page-link" data-page="{{ page_number }}"
+                href="javascript:void(0)">{{ page_number }}</a>
         </li>
         {% endif %}
         {% endif %}
@@ -82,9 +109,12 @@
         <!-- 다음 페이지 -->
         {% if question_list.has_next %}  {# 다음 페이지가 있는지 체크 #}
         <li class="page-item">
-            {# 다음 페이지가 존재한다면, 다음 페이지 번호로 이동 #}
+            {# 다음 페이지 번호로 이동 #}
             {# {{ question_list.next_page_number }} : 다음 페이지 번호 #}
-            <a class="page-link" href="?page={{ question_list.next_page_number }}">다음</a>
+            {# ?page=1 처럼 직접 파라미터를 코딩하는 방식에서, 값을 읽어 폼에 설정할 수 있도록 변경 #}
+            {# 모든 페이지 링크를 href 속성에 직접 입력하는 대신, data-page 속성으로 값을 읽을 수 있도록 변경 #}
+            <a class="page-link" data-page="{{ question_list.next_page_number }}"
+               href="javascript:void(0)">다음</a>
         </li>
         {% else %}  {# 다음 페이지가 없는 경우에는, "다음" 링크가 비활성화되도록 함 #}
         <li class="page-item disabled">
@@ -94,6 +124,39 @@
     </ul>
     <!-- 페이징 처리 끝 -->
     {# 질문 등록하기 버튼 생성 #}
-    <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">질문 등록하기</a>  {# 버튼을 클릭하면, pybo:question_create 별칭에 해당되는 URL이 호출 #}
 </div>
+<!-- 검색 폼 -->
+{# page와 kw를 동시에 GET으로 요청할 searchForm 추가 #}
+{# method="get" : GET 방식으로 요청해야 하므로 method 속성에 "get"을 설정 #}
+{# action="{% url 'index' %}" : action 속성은 '폼이 전송되는 URL'이므로 질문 목록이 있는 URL인 {% url 'index' %}를 지정 #}
+<form id="searchForm" method="get" action="{% url 'index' %}">
+    {# kw와 page는 이전에 요청했던 값을 기억하고 있어야 하므로, value에 값을 대입 #}
+    {# 이전에 요청했던 kw와 page의 값은 index 함수로부터 전달될 것임 #}
+    <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
+    <input type="hidden" id="page" name="page" value="{{ page }}">
+</form>
+{% endblock %}
+<!-- 검색 창 관련 자바스크립트 코드 -->
+<!-- 검색 스크립트 -->
+{% block script %}  {# base.html JS 오버라이딩 #}
+<script type='text/javascript'>
+{# 페이징 처리 관련 코드에 class="page-link"가 적용되어 있으므로, class 속성값으로 "page-link"라는 값을 가지고 있는 링크를 클릭하면, #}
+{# 이 링크의 data-page 속성값을 읽어 searchForm의 page 필드에 설정하고, searchForm을 요청하도록 다음과 같은 스크립트 추가. #}
+const page_elements = document.getElementsByClassName("page-link");
+Array.from(page_elements).forEach(function(element) {
+    element.addEventListener('click', function() {
+        document.getElementById('page').value = this.dataset.page;
+        document.getElementById('searchForm').submit();
+    });
+});
+{# 검색버튼을 클릭하면, 검색어 텍스트창에 입력된 값을 searchForm의 kw 필드에 설정하고, searchForm을 요청하도록 다음과 같은 스크립트 추가. #}
+const btn_search = document.getElementById("btn_search");
+btn_search.addEventListener('click', function() {
+    document.getElementById('kw').value = document.getElementById('search_kw').value;
+    {# 검색버튼을 클릭할 경우 1페이지부터 조회한다. #}
+    {# 검색버튼을 클릭할 때마다 이는 새로운 검색에 해당되므로 #}
+    document.getElementById('page').value = 1;
+    document.getElementById('searchForm').submit();
+});
+</script>
 {% endblock %}
