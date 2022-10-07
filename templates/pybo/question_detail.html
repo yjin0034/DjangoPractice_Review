@@ -35,6 +35,13 @@
             </div>
             <!-- 질문 추천, 수정, 삭제 버튼 -->
             <div class="my-3">
+                {# 추천 버튼 #}
+                {# 버튼에는 추천수도 함께 보이도록 함. 추천 버튼을 클릭하면 href의 속성이 javascript:void(0)으로 되어 있기 때문에 아무런 동작도 하지 않는다. #}
+                {# 하지만, class 속성에 "recommend"를 추가하여 자바스크립로 data-uri에 정의된 URL이 호출되게 할 것이다. 이와 같은 방법을 사용하는 이유는 "추천" 버튼을 눌렀을 때 재확인창을 통해 사용자의 추천 의사에 대해 재확인을 구하기 위함이다. #}
+                <a href="javascript:void(0)" class="recommend btn btn-sm btn-outline-secondary"
+                   data-uri="{% url 'pybo:question_vote' question.id %}">추천
+                  <span class="badge rounded-pill bg-success">{{ question.voter.count }}</span>  {# 추천수 카운트 #}
+                </a>
                 {# 로그인한 사용자와 질문 작성자가 동일한 경우에만 노출되도록 함 #}
                 {% if request.user == question.author %}
                 {# 수정 버튼 #}
@@ -73,6 +80,11 @@
             </div>
             <!-- 답변 추천, 수정, 삭제 버튼 -->
             <div class="my-3">
+                {# 추천 버튼 #}
+                <a href="javascript:void(0)" class="recommend btn btn-sm btn-outline-secondary"
+                   data-uri="{% url 'pybo:answer_vote' answer.id %}">추천
+                  <span class="badge rounded-pill bg-success">{{ answer.voter.count }}</span>  {# 추천수 카운트 #}
+                </a>
                 {# 로그인한 사용자와 답변 작성자가 동일한 경우에만 노출되도록 함 #}
                 {% if request.user == answer.author %}
                 {# 수정 버튼 #}
@@ -114,6 +126,15 @@ const delete_elements = document.getElementsByClassName("delete");
 Array.from(delete_elements).forEach(function(element) {
     element.addEventListener('click', function() {
         if(confirm("정말로 삭제하시겠습니까?")) {
+            location.href = this.dataset.uri;
+        }
+    });
+});
+<!-- (질문 또는 답변의) 추천 버튼 관련 재확인 창 -->
+const recommend_elements = document.getElementsByClassName("recommend");
+Array.from(recommend_elements).forEach(function(element) {
+    element.addEventListener('click', function() {
+        if(confirm("정말로 추천하시겠습니까?")) {
             location.href = this.dataset.uri;
         }
     });

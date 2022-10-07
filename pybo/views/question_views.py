@@ -88,3 +88,17 @@ def question_delete(request, question_id):
         question.delete()
         # 삭제 후, index 페이지로 이동
     return redirect('pybo:index')
+
+# 질문 추천 관련 함수 뷰
+@login_required(login_url='common:login')
+def question_vote(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    # 본인 추천을 방지하기 위해, 로그인한 사용자와 추천하려는 질문의 작성자가 동일할 경우에는 추천할 수 없게 함.
+    if request.user == question.author:
+        messages.error(request, '본인이 작성한 글은 추천할 수 없습니다')
+    else:
+        # Question 모델의 voter는 여러 사람을 추가할 수 있는 ManyToManyField이므로, question.voter.add(request.user) 처럼 add 함수를 사용하여 추천인을 추가한다.
+        # 동일한 사용자가 동일한 질문을 여러 번 추천하더라도 추천수가 증가하지는 않는다. ManyToManyField 내부에서 자체적으로 이와 같이 처리한다.
+        question.voter.add(request.user)
+    # 질문 상세 페이지로 이동
+    return redirect('pybo:detail', question_id=question.id)
