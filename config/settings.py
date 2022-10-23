@@ -37,8 +37,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'common.apps.CommonConfig',  # common 앱 관련 클래스 추가  # common/apps.py 파일에 있는 클래스
-    'pybo.apps.PyboConfig',  # pybo 앱 관련 클래스 추가  # pybo/apps.py 파일에 있는 클래스
+    'common.apps.CommonConfig',  # common 앱 등록  # common 앱 관련 클래스 추가  # CommonConfig : common 앱 설정 클래스. common 앱을 생성할 때 common/apps.py 파일에 정의된 클래스
+    'pybo.apps.PyboConfig',  # pybo 앱 등록  # pybo 앱 관련 클래스 추가  # PyboConfig : pybo 앱 설정 클래스. pybo 앱을 생성할 때 pybo/apps.py 파일에 정의된 클래스
     'django.contrib.admin',
     'django.contrib.auth',  # 장고의 로그인, 로그아웃 기능 관련
     'django.contrib.contenttypes',
@@ -62,7 +62,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # 템플릿 파일을 저장할 템플릿 디렉터리 목록
+        # 프로젝트 템플릿 디렉터리 지정. 템플릿 파일을 저장할 템플릿 디렉터리
         'DIRS': [
             BASE_DIR / 'templates',
         ],
@@ -127,7 +127,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
-# 스태틱 파일을 저장할 스태틱 디렉터리 목록
+# 스태틱 파일 디렉터리 지정. 스태틱 파일을 저장할 스태틱 디렉터리
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
